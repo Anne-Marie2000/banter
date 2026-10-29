@@ -1,98 +1,117 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+// HOME SCREEN
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { router } from "expo-router";
+import { Image, Pressable, ScrollView, StyleSheet, Text } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+import { BanterButton } from "@/components/banter-button";
+import { colors } from "@/constants/colors";
+import { scenarios } from "@/constants/scenarios";
+import { sharedStyles } from "@/constants/shared-styles";
 
 export default function HomeScreen() {
+  // When "Start Practicing" is tapped, go to the Situation screen
+  function startPracticing() {
+    router.push("/situation");
+  }
+
+  // When a scenario is tapped, go to the Situation screen
+  // and send the scenario's name along with it
+  function pickScenario(name: string) {
+    router.push({ pathname: "/situation", params: { scenario: name } });
+  }
+
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
+    // SafeAreaView keeps things away from the top and bottom edges of the phone
+    <SafeAreaView style={sharedStyles.screen}>
+      {/* ScrollView lets the screen scroll if it doesn't fit */}
+      <ScrollView contentContainerStyle={styles.page}>
+        {/* The logo (saved in assets/images) */}
+        <Image
+          source={require("../../assets/images/banter-logo.png")}
+          style={styles.logo}
+          resizeMode="contain"
+          accessibilityLabel="Banter logo"
+        />
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
+        <Text style={styles.headline}>
+          Practice the conversation before it happens.
+        </Text>
+        <Text style={styles.subtitle}>Your AI conversation coach</Text>
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
+        <BanterButton title="Start Practicing" onPress={startPracticing} />
 
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+        <Text style={[sharedStyles.sectionTitle, styles.scenarioHeading]}>
+          Example Scenarios
+        </Text>
+
+        {/* Make one button for each scenario in constants/scenarios.ts */}
+        {scenarios.map((scenario) => (
+          <Pressable
+            key={scenario.name}
+            onPress={() => pickScenario(scenario.name)}
+            style={styles.scenarioButton}
+            accessibilityRole="button"
+          >
+            <Text style={styles.scenarioText}>{scenario.name}</Text>
+            <Text style={styles.arrow}>›</Text>
+          </Pressable>
+        ))}
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
+// Styles only used on this screen
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
+  page: {
+    alignItems: "center", // centre everything
+    paddingHorizontal: 24,
+    paddingTop: 24,
+    paddingBottom: 48,
   },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
+  logo: {
+    width: 170,
+    height: 200,
+    marginBottom: 24,
   },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
+  headline: {
+    marginBottom: 8,
+    fontSize: 24,
+    fontWeight: "800",
+    color: colors.purple,
+    textAlign: "center",
   },
-  title: {
-    textAlign: 'center',
+  subtitle: {
+    marginBottom: 28,
+    fontSize: 16,
+    color: colors.charcoal,
+    textAlign: "center",
   },
-  code: {
-    textTransform: 'uppercase',
+  scenarioHeading: {
+    alignSelf: "flex-start",
+    marginTop: 36,
   },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+  scenarioButton: {
+    alignSelf: "stretch",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+    paddingVertical: 16,
+    paddingHorizontal: 18,
+    backgroundColor: colors.white,
+    borderWidth: 2,
+    borderColor: colors.lavender,
+    borderRadius: 14,
+  },
+  scenarioText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: colors.charcoal,
+  },
+  arrow: {
+    fontSize: 24,
+    color: colors.purple,
   },
 });

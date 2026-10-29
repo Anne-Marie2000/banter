@@ -1,18 +1,11 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useColorScheme } from 'react-native';
+// LAYOUT
+// This file controls how the app moves from screen to screen.
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
+// "Stack" means each new screen slides in on top of the last one.
+// Going back takes you to the screen underneath.
 
-SplashScreen.preventAutoHideAsync();
+import { Stack } from "expo-router";
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
-  return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AnimatedSplashOverlay />
-      <AppTabs />
-    </ThemeProvider>
-  );
+export default function RootLayout() {
+  return <Stack screenOptions={{ headerShown: false }} />;
 }
