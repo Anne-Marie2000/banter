@@ -1,3 +1,4 @@
+import useContinue from '@/hooks/use-continue';
 // SITUATION SCREEN
 // The user writes what they want to practice and who they'll be talking to.
 
@@ -36,7 +37,7 @@ export default function SituationScreen() {
 
   // Remember what's typed in each box
   const [situation, setSituation] = useState(startingText);
-  const [partner, setPartner] = useState("");
+  const [partner, setPartner] = useState(tappedScenario?.partner ?? "");
 
   // Check that both boxes have something in them.
   // .trim() removes spaces, so a box with only spaces counts as empty.
@@ -44,11 +45,14 @@ export default function SituationScreen() {
 
   // When "Continue" is tapped, go to the Customize screen and send what the user wrote
   function goToCustomize() {
+    if (!bothBoxesFilled) return;
     router.push({
       pathname: "/customize",
       params: { situation: situation.trim(), partner: partner.trim() },
     });
   }
+
+  useContinue(goToCustomize, bothBoxesFilled);
 
   return (
     <SafeAreaView style={sharedStyles.screen}>
@@ -64,7 +68,7 @@ export default function SituationScreen() {
           <BackButton />
 
           <Text style={sharedStyles.stepText}>Step 1 of 2</Text>
-          <Text style={sharedStyles.title}>What's your situation?</Text>
+          <Text style={sharedStyles.title}>What is your situation?</Text>
           <Text style={sharedStyles.helperText}>
             Describe the conversation you want to practice.
           </Text>
@@ -86,7 +90,9 @@ export default function SituationScreen() {
           <TextInput
             style={styles.textBox}
             value={partner}
-            onChangeText={setPartner} // save what's typed
+            onChangeText={setPartner}
+            onSubmitEditing={() => { if (bothBoxesFilled) goToCustomize(); }}
+            returnKeyType="go" // save what's typed
             placeholder="e.g. Manager, friend, teacher"
             placeholderTextColor={colors.grey}
           />
