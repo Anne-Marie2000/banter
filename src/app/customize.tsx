@@ -21,7 +21,7 @@ export default function Customize() {
   function option(name: string, selected: boolean, choose: () => void, description?: string) { return <Pressable key={name} accessibilityRole="button" accessibilityState={{ selected }} onPress={choose} style={{ padding: 14, borderRadius: 14, borderWidth: 1, borderColor: selected ? '#6946A1' : '#D8C7E8', backgroundColor: selected ? '#F1E8FA' : '#fff', gap: 4 }}><Text style={{ color: '#302539', fontWeight: '700', fontSize: 16 }}>{selected ? '✓ ' : ''}{name}</Text>{description && <Text style={{ color: '#6B6275' }}>{description}</Text>}</Pressable>; }
   const heading = { fontSize: 19, fontWeight: '700' as const, color: '#302539' };
   return <SafeAreaView style={{ flex: 1, backgroundColor: '#FFF8F4' }}><ScrollView keyboardShouldPersistTaps="handled" style={{ width: '100%' }} contentContainerStyle={{ width: '100%', alignItems: 'center' }}><View style={{ width: '100%', maxWidth: 720, padding: 24, gap: 12 }}>
-    <Pressable accessibilityRole="button" onPress={() => router.back()}><Text style={{ color: '#6946A1' }}>‹ Back</Text></Pressable>
+    <Pressable accessibilityRole="button" onPress={() => router.canGoBack() ? router.back() : router.replace('/')}><Text style={{ color: '#6946A1' }}>‹ Back</Text></Pressable>
     <Text style={{ fontSize: 30, fontWeight: '800', color: '#302539' }}>Set up your conversation</Text>
     <Text style={heading}>Conversation difficulty</Text>{difficulties.map(d => option(d.name, difficulty === d.name, () => setDifficulty(d.name), d.description))}
     <Text style={heading}>Personality</Text><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>{personalities.map(p => option(p, personality === p, () => setPersonality(p)))}</View>

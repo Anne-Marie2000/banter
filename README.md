@@ -15,4 +15,4 @@ Run `npm run web` to open the app. Enter sends a message and Shift + Enter adds 
 
 ## Privacy and deployment
 
-Conversation messages are sent to Groq for replies and requested feedback. Saved session summaries are stored locally on the device; conversation text is not saved to history. The API key is server-side. A production release needs server-capable hosting, an API URL for native builds, and abuse prevention (authentication and rate limiting) before public access. Browser voice input may use the browser's speech service.
+Conversation messages are sent to Groq for replies and requested feedback. When users explicitly save a session, its conversation, settings, reflection and available feedback are stored locally on the device. Saved sessions can be reviewed or deleted in My Journey. The API key is server-side. A production release needs server-capable hosting, an API URL for native builds, and abuse prevention (authentication and rate limiting) before public access. Browser voice input may use the browser's speech service.

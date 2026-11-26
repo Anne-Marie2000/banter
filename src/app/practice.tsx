@@ -48,7 +48,7 @@ export default function PracticeScreen() {
     router.replace({ pathname: '/results', params: session });
   }
   return <SafeAreaView style={s.screen}><KeyboardAvoidingView style={{ flex: 1, width: '100%', maxWidth: 1000, alignSelf: 'center', marginHorizontal: 'auto' }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-    <View style={s.header}><View style={s.top}><Pressable onPress={() => router.back()} accessibilityRole="button"><Text style={s.link}>‹ Back</Text></Pressable><Pressable accessibilityRole="button" onPress={end} style={s.end}><Text style={s.white}>End session</Text></Pressable></View>
+    <View style={s.header}><View style={s.top}><Pressable onPress={() => router.canGoBack() ? router.back() : router.replace('/')} accessibilityRole="button"><Text style={s.link}>‹ Back</Text></Pressable><Pressable accessibilityRole="button" onPress={end} style={s.end}><Text style={s.white}>End session</Text></Pressable></View>
     <Text style={s.title}>{name}</Text><Text style={s.subtitle}>{session.difficulty} · Practice session</Text></View>
     <ScrollView ref={scroll} style={{ flex: 1 }} contentContainerStyle={s.chat} keyboardShouldPersistTaps="handled" onContentSizeChange={() => scroll.current?.scrollToEnd({ animated: true })}>
       {messages.map((m, i) => <View key={i} style={[s.bubble, m.from === 'user' ? s.mine : s.theirs]}><Text style={s.label}>{m.from === 'user' ? 'You' : name}</Text><Text style={s.message}>{m.text}</Text></View>)}

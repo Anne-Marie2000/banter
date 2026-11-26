@@ -10,7 +10,7 @@ export function BackButton() {
   return (
     <Pressable
       // go back to the last screen
-      onPress={() => router.back()}
+      onPress={() => router.canGoBack() ? router.back() : router.replace('/')}
       style={styles.button}
       accessibilityRole="button"
       accessibilityLabel="Go back"

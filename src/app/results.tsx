@@ -12,8 +12,8 @@ export default function ResultsScreen() {
   const turns = messages.filter(m => m.from === 'user').length;
   const [feeling, setFeeling] = useState(''); const [feedback, setFeedback] = useState(''); const [busy, setBusy] = useState(false); const [saved, setSaved] = useState(false); const [notice, setNotice] = useState('');
   const id = useRef("");
-  async function coach() { if (busy) return; setBusy(true); setNotice(''); try { setFeedback(await getReply(session, messages, true)); } catch { setNotice('Feedback unavailable. You can try again or skip it.'); } finally { setBusy(false); } }
-  async function save() { if (!id.current) id.current = `${Date.now()}-${Math.random().toString(36).slice(2)}`; try { await saveHistory({ id: id.current, partner: session.partner, difficulty: session.difficulty, date: new Date().toISOString(), turns, feeling }); setSaved(true); setNotice('Session saved on this device.'); } catch { setNotice('Could not save this session.'); } }
+  async function coach() { if (busy) return; setBusy(true); setNotice(''); try { setFeedback(await getReply(session, messages, true)); setSaved(false); } catch { setNotice('Feedback unavailable. You can try again or skip it.'); } finally { setBusy(false); } }
+  async function save() { if (!id.current) id.current = `${Date.now()}-${Math.random().toString(36).slice(2)}`; try { await saveHistory({ id: id.current, partner: session.partner, difficulty: session.difficulty, date: new Date().toISOString(), turns, feeling, situation: session.situation, personality: session.personality, mode: session.mode, messages, feedback }); setSaved(true); setNotice('Session saved on this device.'); } catch { setNotice('Could not save this session.'); } }
   return <SafeAreaView style={s.screen}><ScrollView style={{ width: '100%' }} contentContainerStyle={{ width: '100%', alignItems: 'center' }}><View style={s.page}>
     <Text style={s.eyebrow}>SESSION COMPLETE</Text><Text style={s.title}>Practice complete.</Text><Text style={s.body}>You sent {turns} {turns === 1 ? 'reply' : 'replies'}. Practice again whenever you need to.</Text>
     <Text style={s.heading}>How did it go?</Text><Text style={s.body}>Optional reflection.</Text>
@@ -22,8 +22,8 @@ export default function ResultsScreen() {
       {turns > 0 && <BanterButton title={busy ? 'Getting feedback…' : feedback ? 'Refresh suggestions' : 'Show feedback'} onPress={coach} disabled={busy} look="outline" />}
       {!!feedback && <>{feedback.replace(/&(?:#x20|#32|nbsp);/gi, ' ').replace(/\*+/g, '').split(/(?:^|\n|;\s*)(?=What worked:|Try next:|Example:)/i).filter(Boolean).map((part, i) => { const match = part.match(/^(What worked|Try next|Example):\s*([\s\S]*)/i); return <View key={i} style={{ backgroundColor: '#F6EEFB', padding: 14, borderRadius: 12, gap: 5 }}><Text style={{ fontWeight: '700', color: '#302539' }}>{match?.[1] || 'Suggestion'}</Text><Text style={s.body}>{match?.[2] || part}</Text></View>; })}<BanterButton title="Hide feedback" onPress={() => setFeedback('')} look="outline" /></>}
     </View>
-    <BanterButton title={saved ? 'Session saved' : 'Save to My Journey'} onPress={save} disabled={saved || turns === 0} look="outline" />
-    <Text style={s.body}>Saving stores your practice summary on this device, not your chat messages.</Text>{!!notice && <Text style={s.body}>{notice}</Text>}
+    <BanterButton title={saved ? 'Session saved' : 'Save to My Journey'} onPress={save} disabled={saved || busy || turns === 0} look="outline" />
+    <Text style={s.body}>Saving stores this conversation, reflection and available feedback on this device. You can delete saved sessions in My Journey.</Text>{!!notice && <Text style={s.body}>{notice}</Text>}
     <BanterButton title="Practice again" onPress={() => router.replace({ pathname: '/practice', params: session })}/><BanterButton title="Back to home" onPress={() => router.replace('/')} look="outline" />
   </View></ScrollView></SafeAreaView>;
 }
