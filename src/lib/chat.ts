@@ -14,5 +14,9 @@ export async function getReply(session: Session, messages: Message[], coaching =
   });
   const data = await res.json();
   if (!res.ok || typeof data.reply !== 'string') throw new Error(data.error || 'Could not get a reply.');
-  return data.reply as string;
+  return (data.reply as string)
+    .replace(/&amp;/gi, '&')
+    .replace(/&(?:#x20|#32|nbsp|#160);/gi, ' ')
+    .replace(/[\u00a0\u200b]/g, ' ')
+    .trim();
 }
