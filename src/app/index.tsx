@@ -1,117 +1,20 @@
-// HOME SCREEN
-
-import { router } from "expo-router";
-import { Image, Pressable, ScrollView, StyleSheet, Text } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-
-import { BanterButton } from "@/components/banter-button";
-import { colors } from "@/constants/colors";
-import { scenarios } from "@/constants/scenarios";
-import { sharedStyles } from "@/constants/shared-styles";
-
+import { useEffect, useState } from 'react';
+import { router } from 'expo-router';
+import { Image, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { scenarios } from '@/constants/scenarios';
+import { BanterButton } from '@/components/banter-button';
 export default function HomeScreen() {
-  // When "Start Practicing" is tapped, go to the Situation screen
-  function startPracticing() {
-    router.push("/situation");
-  }
-
-  // When a scenario is tapped, go to the Situation screen
-  // and send the scenario's name along with it
-  function pickScenario(name: string) {
-    router.push({ pathname: "/situation", params: { scenario: name } });
-  }
-
-  return (
-    // SafeAreaView keeps things away from the top and bottom edges of the phone
-    <SafeAreaView style={sharedStyles.screen}>
-      {/* ScrollView lets the screen scroll if it doesn't fit */}
-      <ScrollView contentContainerStyle={styles.page}>
-        {/* The logo (saved in assets/images) */}
-        <Image
-          source={require("../../assets/images/banter-logo.png")}
-          style={styles.logo}
-          resizeMode="contain"
-          accessibilityLabel="Banter logo"
-        />
-
-        <Text style={styles.headline}>
-          Practice the conversation before it happens.
-        </Text>
-        <Text style={styles.subtitle}>Your AI conversation coach</Text>
-
-        <BanterButton title="Start Practicing" onPress={startPracticing} />
-
-        <Text style={[sharedStyles.sectionTitle, styles.scenarioHeading]}>
-          Example Scenarios
-        </Text>
-
-        {/* Make one button for each scenario in constants/scenarios.ts */}
-        {scenarios.map((scenario) => (
-          <Pressable
-            key={scenario.name}
-            onPress={() => pickScenario(scenario.name)}
-            style={styles.scenarioButton}
-            accessibilityRole="button"
-          >
-            <Text style={styles.scenarioText}>{scenario.name}</Text>
-            <Text style={styles.arrow}>›</Text>
-          </Pressable>
-        ))}
-      </ScrollView>
-    </SafeAreaView>
-  );
+  const { width } = useWindowDimensions();
+  const [ready, setReady] = useState(false);
+  useEffect(() => { const timer = setTimeout(() => setReady(true), 0); return () => clearTimeout(timer); }, []);
+  const twoColumns = ready && width >= 580;
+  return <SafeAreaView style={s.screen}><ScrollView style={{ width: '100%' }} contentContainerStyle={{ width: '100%', alignItems: 'center' }}><View style={s.page}>
+    <View style={s.nav}><Image source={require('../../assets/images/banter-logo.png')} style={s.logo} resizeMode="contain" accessibilityLabel="Banter" /><Pressable accessibilityRole="button" onPress={() => router.push('/journey')}><Text style={s.link}>My Journey ↗</Text></Pressable></View>
+    <View style={s.hero}><Text style={s.eyebrow}>YOUR CONVERSATION PRACTICE SPACE</Text><Text style={s.title}>Find the words before the moment.</Text><Text style={s.body}>Practice real conversations with AI, at your own pace. Prepare for the conversations that matter.</Text><BanterButton title="Start practicing →" onPress={() => router.push('/situation')} /><Text style={s.note}>Your conversation is processed by an AI service. Avoid sharing sensitive personal information.</Text></View>
+    <Text style={s.heading}>What would you like to practice?</Text><Text style={s.body}>Pick a situation or create your own.</Text>
+    <View style={s.grid}>{scenarios.map((scenario, i) => <Pressable key={scenario.name} accessibilityRole="button" onPress={() => router.push({ pathname: '/situation', params: { scenario: scenario.name } })} style={({ pressed }) => [s.card, { width: twoColumns ? '48.5%' : '100%', backgroundColor: i % 3 === 0 ? '#F1E8FA' : i % 3 === 1 ? '#FCEBE2' : '#fff', opacity: pressed ? .75 : 1 }]}><Text style={s.cardTitle}>{scenario.name}  ↗</Text><Text style={s.body}>{scenario.description}</Text></Pressable>)}</View>
+    <BanterButton title="Create your own situation" look="outline" onPress={() => router.push('/situation')}/>
+  </View></ScrollView></SafeAreaView>;
 }
-
-// Styles only used on this screen
-const styles = StyleSheet.create({
-  page: {
-    alignItems: "center", // centre everything
-    paddingHorizontal: 24,
-    paddingTop: 24,
-    paddingBottom: 48,
-  },
-  logo: {
-    width: 170,
-    height: 200,
-    marginBottom: 24,
-  },
-  headline: {
-    marginBottom: 8,
-    fontSize: 24,
-    fontWeight: "800",
-    color: colors.purple,
-    textAlign: "center",
-  },
-  subtitle: {
-    marginBottom: 28,
-    fontSize: 16,
-    color: colors.charcoal,
-    textAlign: "center",
-  },
-  scenarioHeading: {
-    alignSelf: "flex-start",
-    marginTop: 36,
-  },
-  scenarioButton: {
-    alignSelf: "stretch",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 10,
-    paddingVertical: 16,
-    paddingHorizontal: 18,
-    backgroundColor: colors.white,
-    borderWidth: 2,
-    borderColor: colors.lavender,
-    borderRadius: 14,
-  },
-  scenarioText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: colors.charcoal,
-  },
-  arrow: {
-    fontSize: 24,
-    color: colors.purple,
-  },
-});
+const s = StyleSheet.create({ screen: { flex: 1, backgroundColor: '#FFF8F4' }, page: { width: '100%', maxWidth: 850, alignSelf: 'center', padding: 24, paddingBottom: 48, gap: 16 }, nav: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }, logo: { width: 150, height: 64 }, link: { fontSize: 14, fontWeight: '700', color: '#6946A1' }, hero: { padding: 24, backgroundColor: '#F1E8FA', borderRadius: 24, gap: 16 }, eyebrow: { fontSize: 11, letterSpacing: 1.5, fontWeight: '800', color: '#6946A1' }, title: { fontSize: 36, lineHeight: 42, fontWeight: '800', color: '#302539' }, heading: { fontSize: 23, fontWeight: '800', color: '#302539', marginTop: 8 }, body: { fontSize: 15, lineHeight: 22, color: '#6B6275' }, note: { fontSize: 12, lineHeight: 18, color: '#6B6275' }, grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 12 }, card: { padding: 20, borderRadius: 18, borderWidth: 1, borderColor: '#EADFF0', gap: 9 }, cardTitle: { fontSize: 17, fontWeight: '700', color: '#302539' } });

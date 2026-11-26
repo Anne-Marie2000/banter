@@ -1,15 +1,10 @@
-// PRACTICE OPTIONS
-// The choices on the Customize screen.
-
-// How hard the conversation is
+import { Platform } from 'react-native';
 export const difficulties = [
-  { name: "Easy", description: "Friendly and supportive" },
-  { name: "Medium", description: "Realistic conversation" },
-  { name: "Hard", description: "Challenging responses" },
+  { name: 'Easy', description: 'Friendly and straightforward' },
+  { name: 'Medium', description: 'Natural questions and follow-ups' },
+  { name: 'Hard', description: 'Realistic challenges and tougher questions' },
 ];
-
-// How the user answers
 export const modes = [
-  { name: "Text", description: "Type your answers" },
-  { name: "Voice", description: "Speak your answers" },
+  { name: 'Text', description: 'Type your answers' },
+  ...(Platform.OS === 'web' ? [{ name: 'Voice', description: 'Use your browser microphone or type' }] : []),
 ];
